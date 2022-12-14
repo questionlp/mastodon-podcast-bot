@@ -18,6 +18,9 @@ class AppCommand:
             description="Fetch items from a podcast feed and publish new items to a Mastodon account."
         )
         parser.add_argument(
+            "--debug", action="store_true", help="Enable debug output to stdout"
+        )
+        parser.add_argument(
             "--skip-clean",
             action="store_true",
             help="Skip database clean-up after processing and posting episodes",

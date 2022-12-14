@@ -7,6 +7,7 @@
 
 from argparse import Namespace
 from datetime import datetime, timedelta
+from pprint import pprint
 from typing import Any
 
 from html2text import HTML2Text
@@ -18,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.0"
+APP_VERSION: str = "0.1.1"
 
 
 def retrieve_new_episodes(
@@ -26,10 +27,14 @@ def retrieve_new_episodes(
     feed_database: FeedDatabase,
     days: int = 7,
     dry_run: bool = False,
+    debug: bool = False,
 ) -> list[dict[str, Any]]:
     """Iterate through the episodes retrieved from a podcast feed and
     return any new or unseen episodes that have been posted recently."""
-    seed_guids: list[str] = feed_database.retrieve_guids()
+    seen_guids: list[str] = feed_database.retrieve_guids()
+    if debug:
+        pprint(seen_guids)
+
     episodes: list[dict[str, Any]] = []
 
     for episode in feed_episodes:
@@ -37,17 +42,18 @@ def retrieve_new_episodes(
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
         if datetime.now() - publish_date <= timedelta(days=days):
-            if guid not in seed_guids:
-                episodes.append(
-                    {
-                        "guid": guid,
-                        "published": publish_date,
-                        "title": episode["title"].strip(),
-                        "description": episode["description_html"].strip(),
-                        "duration": timedelta(seconds=episode["total_time"]),
-                        "url": episode["enclosures"][0]["url"].strip(),
-                    }
-                )
+            if guid not in seen_guids:
+                info: dict[str, Any] = {
+                    "guid": guid,
+                    "published": publish_date,
+                    "title": episode["title"].strip(),
+                    "description": episode["description_html"].strip(),
+                    "duration": timedelta(seconds=episode["total_time"]),
+                    "url": episode["enclosures"][0]["url"].strip(),
+                }
+                episodes.append(info)
+                if debug:
+                    pprint(info)
                 if not dry_run:
                     feed_database.insert(guid=guid, timestamp=datetime.now())
 
