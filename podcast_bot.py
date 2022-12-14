@@ -19,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.1"
+APP_VERSION: str = "0.1.2"
 
 
 def retrieve_new_episodes(
@@ -127,6 +127,8 @@ def main() -> None:
     env: dict = AppEnvironment().parse()
     dry_run: bool = arguments.dry_run
 
+    if arguments.debug:
+        print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     # Check to see if the feed database file exists. Create file if
     # the file does not exist
     feed_database: FeedDatabase = FeedDatabase(env["db_file"])
@@ -168,6 +170,8 @@ def main() -> None:
     if not dry_run or not arguments.skip_clean:
         feed_database.clean(days_to_keep=env["db_clean_days"])
 
+    if arguments.debug:
+        print(f"Completed time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == "__main__":
     main()
