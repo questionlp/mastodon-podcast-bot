@@ -33,6 +33,7 @@ def retrieve_new_episodes(
     return any new or unseen episodes that have been posted recently."""
     seen_guids: list[str] = feed_database.retrieve_guids()
     if debug:
+        print("Seen GUIDs:")
         pprint(seen_guids)
 
     episodes: list[dict[str, Any]] = []
@@ -53,6 +54,7 @@ def retrieve_new_episodes(
                 }
                 episodes.append(info)
                 if debug:
+                    print(f"Episode Info for GUID {guid}:")
                     pprint(info)
                 if not dry_run:
                     feed_database.insert(guid=guid, timestamp=datetime.now())
@@ -149,6 +151,9 @@ def main() -> None:
             debug=arguments.debug,
         )
         new_episodes.reverse()
+        if arguments.debug:
+            print("New Episodes:")
+            pprint(new_episodes)
 
         for episode in new_episodes:
             post_text: str = format_post(
