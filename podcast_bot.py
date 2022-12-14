@@ -146,6 +146,7 @@ def main() -> None:
             feed_database=feed_database,
             days=env["recent_days"],
             dry_run=dry_run,
+            debug=arguments.debug,
         )
         new_episodes.reverse()
 
