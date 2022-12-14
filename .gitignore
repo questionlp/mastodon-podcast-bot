@@ -5,6 +5,10 @@ feed_info.sqlite3
 secrets/*
 !secrets/README.md
 
+# Exclude custom templates
+templates/*
+!templates/post.txt.jinja
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
