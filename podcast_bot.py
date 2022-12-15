@@ -19,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.2"
+APP_VERSION: str = "0.1.3"
 
 
 def retrieve_new_episodes(
