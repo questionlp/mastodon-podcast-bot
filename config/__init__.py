@@ -36,16 +36,28 @@ class AppEnvironment:
         config["mastodon"]: dict[str, str | int] = {}
 
         # Load values into the configuration dictionary
-        config["db_file"]: str = dotenv_config.get("DB_FILE", "feed_info.sqlite3")
+        config["db_file"]: str = dotenv_config.get(
+            "DB_FILE", "feed_info.sqlite3"
+        ).strip()
         config["db_clean_days"]: int = int(dotenv_config.get("DB_CLEAN_DAYS", 90))
         config["recent_days"]: int = int(dotenv_config.get("RECENT_DAYS", 5))
         config["max_episodes"]: int = int(dotenv_config.get("MAX_EPISODES", 50))
-        config["podcast_feed"]: str = dotenv_config.get("PODCAST_FEED_URL")
-        config["podcast_name"]: str = dotenv_config.get("PODCAST_NAME", None)
-        config["podcast_guid_filter"]: str = dotenv_config.get("PODCAST_GUID_FILTER", None)
-        config["post_template_dir"]: str = dotenv_config.get("POST_TEMPLATE_DIR", "templates")
-        config["post_template"]: str = dotenv_config.get("POST_TEMPLATE", "post.txt.jinja")
-        config["mastodon"]["secret_file"]: str = dotenv_config["MASTODON_SECRET"]
-        config["mastodon"]["api_url"]: str = dotenv_config["MASTODON_API_BASE_URL"]
+        config["podcast_feed"]: str = dotenv_config.get("PODCAST_FEED_URL").strip()
+        config["podcast_name"]: str = dotenv_config.get("PODCAST_NAME").strip()
+        config["podcast_guid_filter"]: str = dotenv_config.get(
+            "PODCAST_GUID_FILTER", ""
+        ).strip()
+        config["post_template_dir"]: str = dotenv_config.get(
+            "POST_TEMPLATE_DIR", "templates"
+        ).strip()
+        config["post_template"]: str = dotenv_config.get(
+            "POST_TEMPLATE", "post.txt.jinja"
+        ).strip()
+        config["mastodon"]["secret_file"]: str = dotenv_config[
+            "MASTODON_SECRET"
+        ].strip()
+        config["mastodon"]["api_url"]: str = dotenv_config[
+            "MASTODON_API_BASE_URL"
+        ].strip()
 
         return config

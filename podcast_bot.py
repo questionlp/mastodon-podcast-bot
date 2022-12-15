@@ -25,7 +25,7 @@ APP_VERSION: str = "0.1.4"
 def retrieve_new_episodes(
     feed_episodes: list[dict[str, Any]],
     feed_database: FeedDatabase,
-    guid_filter: str = None,
+    guid_filter: str = "",
     days: int = 7,
     dry_run: bool = False,
     debug: bool = False,
@@ -63,11 +63,17 @@ def retrieve_new_episodes(
                         print(f"Episode Info for GUID {guid}:")
                         pprint(info)
                     if not dry_run:
-                        feed_database.insert(
-                            guid=guid,
-                            enclosure_url=enclosure_url,
-                            timestamp=datetime.now(),
-                        )
+                        if enclosure_url not in seen_enclosure_urls:
+                            feed_database.insert(
+                                guid=guid,
+                                enclosure_url=enclosure_url,
+                                timestamp=datetime.now(),
+                            )
+                        else:
+                            feed_database.insert(
+                                guid=guid,
+                                timestamp=datetime.now(),
+                            )
 
     return episodes
 

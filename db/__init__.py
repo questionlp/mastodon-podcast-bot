@@ -56,15 +56,22 @@ class FeedDatabase:
             self.connection = sqlite3.connect(db_file)
 
     def insert(
-        self, guid: str, enclosure_url: str, timestamp: datetime = datetime.now()
+        self, guid: str, enclosure_url: str = None, timestamp: datetime = datetime.now()
     ) -> None:
         """Insert feed episode GUID into the feed database with a
         timestamp (default: current date/time)."""
-        self.connection.execute(
-            "INSERT INTO episodes (guid, enclosure_url, processed) VALUES (?, ?, ?)",
-            (guid, enclosure_url, timestamp),
-        )
-        self.connection.commit()
+        if enclosure_url:
+            self.connection.execute(
+                "INSERT INTO episodes (guid, enclosure_url, processed) VALUES (?, ?, ?)",
+                (guid, enclosure_url, timestamp),
+            )
+            self.connection.commit()
+        else:
+            self.connection.execute(
+                "INSERT INTO episodes (guid, processed) VALUES (?, ?)",
+                (guid, timestamp),
+            )
+            self.connection.commit()
         return
 
     def retrieve(self, episode_guid: str) -> dict[str, Any]:
