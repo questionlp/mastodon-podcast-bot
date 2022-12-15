@@ -19,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.4"
+APP_VERSION: str = "0.1.5"
 
 
 def retrieve_new_episodes(
@@ -48,8 +48,13 @@ def retrieve_new_episodes(
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
         if datetime.now() - publish_date <= timedelta(days=days):
+            # Only process episodes in which the GUID or the enclosure URL are
+            # not in the episodes database table
             if guid not in seen_guids or enclosure_url not in seen_enclosure_urls:
-                if guid_filter in guid:
+                # Use guid_filter to match against the episode GUID to filter
+                # out any random or incorrect GUIDs. This is a workaround to
+                # reduce issues encountered with American Public Media feeds
+                if guid_filter is not None and guid_filter.lower() in guid.lower():
                     info: dict[str, Any] = {
                         "guid": guid,
                         "published": publish_date,
@@ -63,6 +68,8 @@ def retrieve_new_episodes(
                         print(f"Episode Info for GUID {guid}:")
                         pprint(info)
                     if not dry_run:
+                        # Only add the enclosure URL if it's not already in
+                        # the episodes table to prevent duplicate entries.
                         if enclosure_url not in seen_enclosure_urls:
                             feed_database.insert(
                                 guid=guid,
