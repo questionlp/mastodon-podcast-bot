@@ -88,7 +88,7 @@ class FeedDatabase:
         """Retrieve all episode enclosure URLs from the feed database."""
         urls: list[str] = []
         for url in self.connection.execute(
-            "SELECT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL"
+            "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL"
         ):
             urls.append(url[0])
 
@@ -98,7 +98,7 @@ class FeedDatabase:
         """Retrieve all episode GUIDs from the feed database."""
         guids: list[str] = []
         for guid in self.connection.execute(
-            "SELECT guid FROM episodes WHERE guid IS NOT NULL"
+            "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL"
         ):
             guids.append(guid[0])
 
