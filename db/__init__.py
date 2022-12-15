@@ -23,6 +23,7 @@ class FeedDatabase:
             self.connection: Connection = sqlite3.connect(db_file)
         if db_file and Path(db_file).exists():
             self.connection: Connection = sqlite3.connect(db_file)
+            self._migrate()
 
     def initialize(self, db_file: str) -> None:
         """Initialize feed database with the required table"""
@@ -30,8 +31,23 @@ class FeedDatabase:
             return
 
         database: Connection = sqlite3.connect(db_file)
-        database.execute("CREATE TABLE episodes(guid str, processed datetime)")
+        database.execute(
+            "CREATE TABLE episodes(guid str, enclosure_url str, processed datetime)"
+        )
+        database.commit()
         database.close()
+        return
+
+    def _migrate(self) -> None:
+        """Run any required database migration steps."""
+        cursor = self.connection.execute(
+            "SELECT name FROM pragma_table_info('episodes') WHERE name = 'enclosure_url'"
+        )
+        result = cursor.fetchone()
+        cursor.close()
+        if not result:
+            self.connection.execute("ALTER TABLE episodes ADD COLUMN enclosure_url str")
+            self.connection.commit()
         return
 
     def connect(self, db_file: str) -> None:
@@ -39,12 +55,14 @@ class FeedDatabase:
         if Path(db_file).exists():
             self.connection = sqlite3.connect(db_file)
 
-    def insert(self, guid: str, timestamp: datetime = datetime.now()) -> None:
+    def insert(
+        self, guid: str, enclosure_url: str, timestamp: datetime = datetime.now()
+    ) -> None:
         """Insert feed episode GUID into the feed database with a
         timestamp (default: current date/time)."""
         self.connection.execute(
-            "INSERT INTO episodes (guid, processed) VALUES (?, ?)",
-            (guid, timestamp),
+            "INSERT INTO episodes (guid, enclosure_url, processed) VALUES (?, ?, ?)",
+            (guid, enclosure_url, timestamp),
         )
         self.connection.commit()
         return
@@ -59,20 +77,32 @@ class FeedDatabase:
         episode["guid"], episode["processed"] = result.fetchone()
         return episode
 
+    def retrieve_enclosure_urls(self) -> list[str]:
+        """Retrieve all episode enclosure URLs from the feed database."""
+        urls: list[str] = []
+        for url in self.connection.execute(
+            "SELECT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL"
+        ):
+            urls.append(url[0])
+
+        return urls
+
     def retrieve_guids(self) -> list[str]:
         """Retrieve all episode GUIDs from the feed database."""
-        episodes: list[str] = []
-        for guid in self.connection.execute("SELECT guid FROM episodes"):
-            episodes.append(guid[0])
+        guids: list[str] = []
+        for guid in self.connection.execute(
+            "SELECT guid FROM episodes WHERE guid IS NOT NULL"
+        ):
+            guids.append(guid[0])
 
-        return episodes
+        return guids
 
     def clean(self, days_to_keep: int = 90) -> None:
         """Remove episode entries from the database that are older than
         a certain number of days (default: 90)."""
         datetime_filter: datetime = datetime.now() - timedelta(days=days_to_keep)
         self.connection.execute(
-            "DELETE FROM episodes WHERE processed <= ?",
-            (datetime_filter,)
+            "DELETE FROM episodes WHERE processed <= ?", (datetime_filter,)
         )
         self.connection.commit()
+        return

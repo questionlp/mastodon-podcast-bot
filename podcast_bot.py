@@ -33,32 +33,41 @@ def retrieve_new_episodes(
     """Iterate through the episodes retrieved from a podcast feed and
     return any new or unseen episodes that have been posted recently."""
     seen_guids: list[str] = feed_database.retrieve_guids()
+    seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls()
     if debug:
         print("Seen GUIDs:")
         pprint(seen_guids)
+        print("Seen Enclosure URLs:")
+        pprint(seen_enclosure_urls)
 
     episodes: list[dict[str, Any]] = []
 
     for episode in feed_episodes:
         guid: str = episode["guid"]
+        enclosure_url: str = episode["enclosures"][0]["url"].strip()
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
         if datetime.now() - publish_date <= timedelta(days=days):
-            if guid not in seen_guids and guid_filter in guid:
-                info: dict[str, Any] = {
-                    "guid": guid,
-                    "published": publish_date,
-                    "title": episode["title"].strip(),
-                    "description": episode["description_html"].strip(),
-                    "duration": timedelta(seconds=episode["total_time"]),
-                    "url": episode["enclosures"][0]["url"].strip(),
-                }
-                episodes.append(info)
-                if debug:
-                    print(f"Episode Info for GUID {guid}:")
-                    pprint(info)
-                if not dry_run:
-                    feed_database.insert(guid=guid, timestamp=datetime.now())
+            if guid not in seen_guids or enclosure_url not in seen_enclosure_urls:
+                if guid_filter in guid:
+                    info: dict[str, Any] = {
+                        "guid": guid,
+                        "published": publish_date,
+                        "title": episode["title"].strip(),
+                        "description": episode["description_html"].strip(),
+                        "duration": timedelta(seconds=episode["total_time"]),
+                        "url": enclosure_url,
+                    }
+                    episodes.append(info)
+                    if debug:
+                        print(f"Episode Info for GUID {guid}:")
+                        pprint(info)
+                    if not dry_run:
+                        feed_database.insert(
+                            guid=guid,
+                            enclosure_url=enclosure_url,
+                            timestamp=datetime.now(),
+                        )
 
     return episodes
 
@@ -129,7 +138,7 @@ def main() -> None:
     dry_run: bool = arguments.dry_run
 
     if arguments.debug:
-        print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')}")
     # Check to see if the feed database file exists. Create file if
     # the file does not exist
     feed_database: FeedDatabase = FeedDatabase(env["db_file"])
@@ -173,7 +182,7 @@ def main() -> None:
         feed_database.clean(days_to_keep=env["db_clean_days"])
 
     if arguments.debug:
-        print(f"Completed time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Completed time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')}")
 
 
 if __name__ == "__main__":
