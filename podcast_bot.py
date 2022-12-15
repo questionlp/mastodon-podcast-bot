@@ -25,6 +25,7 @@ APP_VERSION: str = "0.1.2"
 def retrieve_new_episodes(
     feed_episodes: list[dict[str, Any]],
     feed_database: FeedDatabase,
+    guid_filter: str = None,
     days: int = 7,
     dry_run: bool = False,
     debug: bool = False,
@@ -43,7 +44,7 @@ def retrieve_new_episodes(
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
         if datetime.now() - publish_date <= timedelta(days=days):
-            if guid not in seen_guids:
+            if guid not in seen_guids and guid_filter in guid:
                 info: dict[str, Any] = {
                     "guid": guid,
                     "published": publish_date,
@@ -148,6 +149,7 @@ def main() -> None:
         new_episodes: list[dict[str, Any]] = retrieve_new_episodes(
             feed_episodes=episodes,
             feed_database=feed_database,
+            guid_filter=env["podcast_guid_filter"],
             days=env["recent_days"],
             dry_run=dry_run,
             debug=arguments.debug,

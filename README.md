@@ -28,6 +28,7 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 | MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed. (Default: 50) |
 | PODCAST_FEED | URL for the podcast feed the application will pull episodes from. |
 | PODCAST_NAME | Name of the podcast to be included in the post. |
+| PODCAST_GUID_FILTER | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
 | POST_TEMPLATE_DIR | Path of the directory containing the Jinja2 template file. |
 | POST_TEMPLATE | File name of the Jinja2 template file that will be used to format the post. |
 | MASTODON_SECRET | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |

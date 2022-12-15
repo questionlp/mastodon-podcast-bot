@@ -42,6 +42,7 @@ class AppEnvironment:
         config["max_episodes"]: int = int(dotenv_config.get("MAX_EPISODES", 50))
         config["podcast_feed"]: str = dotenv_config.get("PODCAST_FEED_URL")
         config["podcast_name"]: str = dotenv_config.get("PODCAST_NAME", None)
+        config["podcast_guid_filter"]: str = dotenv_config.get("PODCAST_GUID_FILTER", None)
         config["post_template_dir"]: str = dotenv_config.get("POST_TEMPLATE_DIR", "templates")
         config["post_template"]: str = dotenv_config.get("POST_TEMPLATE", "post.txt.jinja")
         config["mastodon"]["secret_file"]: str = dotenv_config["MASTODON_SECRET"]
