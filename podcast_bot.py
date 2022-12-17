@@ -19,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.5"
+APP_VERSION: str = "0.1.6"
 
 
 def retrieve_new_episodes(
@@ -122,6 +122,9 @@ def format_post(
     title: str = unsmart_quotes(text=episode["title"])
     description: str = unsmart_quotes(text=episode["description"])
     formatted_description: str = formatter.handle(description)
+
+    # Fix issue with HTML2Text causing + to be rendered as \+
+    formatted_description = formatted_description.replace(r"\+", "+")
 
     if len(formatted_description) > description_max_length:
         formatted_description = (
