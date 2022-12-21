@@ -19,7 +19,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.6"
+APP_VERSION: str = "0.1.7"
 
 
 def retrieve_new_episodes(
@@ -59,10 +59,15 @@ def retrieve_new_episodes(
                         "guid": guid,
                         "published": publish_date,
                         "title": episode["title"].strip(),
-                        "description": episode["description_html"].strip(),
                         "duration": timedelta(seconds=episode["total_time"]),
                         "url": enclosure_url,
                     }
+
+                    if "description_html" in episode:
+                        info["description"] = episode["description_html"].strip()
+                    else:
+                        info["description"] = episode["description"].strip()
+
                     episodes.append(info)
                     if debug:
                         print(f"Episode Info for GUID {guid}:")
