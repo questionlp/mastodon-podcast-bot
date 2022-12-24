@@ -1,7 +1,3 @@
 {
-    "python.formatting.provider": "black",
-    "cSpell.words": [
-        "guids",
-        "podcastparser"
-    ]
+    "python.formatting.provider": "black"
 }

@@ -7,7 +7,8 @@
 
 from argparse import Namespace
 from datetime import datetime, timedelta
-from pprint import pprint
+import logging
+from pprint import pformat
 from typing import Any
 
 from html2text import HTML2Text
@@ -19,7 +20,8 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.1.7"
+APP_VERSION: str = "0.2.0"
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def retrieve_new_episodes(
@@ -28,17 +30,14 @@ def retrieve_new_episodes(
     guid_filter: str = "",
     days: int = 7,
     dry_run: bool = False,
-    debug: bool = False,
 ) -> list[dict[str, Any]]:
     """Iterate through the episodes retrieved from a podcast feed and
     return any new or unseen episodes that have been posted recently."""
     seen_guids: list[str] = feed_database.retrieve_guids()
     seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls()
-    if debug:
-        print("Seen GUIDs:")
-        pprint(seen_guids)
-        print("Seen Enclosure URLs:")
-        pprint(seen_enclosure_urls)
+
+    logger.debug(f"Seen GUIDs:\n{pformat(seen_guids, compact=True)}")
+    logger.debug(f"Seen Enclosure URLs:\n{pformat(seen_enclosure_urls, compact=True)}")
 
     episodes: list[dict[str, Any]] = []
 
@@ -69,9 +68,10 @@ def retrieve_new_episodes(
                         info["description"] = episode["description"].strip()
 
                     episodes.append(info)
-                    if debug:
-                        print(f"Episode Info for GUID {guid}:")
-                        pprint(info)
+                    logger.debug(
+                        f"Episode Info for GUID {guid}:\n{pformat(info, sort_dicts=False, compact=True)}"
+                    )
+
                     if not dry_run:
                         # Only add the enclosure URL if it's not already in
                         # the episodes table to prevent duplicate entries.
@@ -158,8 +158,22 @@ def main() -> None:
     env: dict = AppEnvironment().parse()
     dry_run: bool = arguments.dry_run
 
-    if arguments.debug:
-        print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')}")
+    if env["log_file"]:
+        log_handler: logging.FileHandler = logging.FileHandler(env["log_file"])
+        log_format: logging.Formatter = logging.Formatter(
+            fmt="%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        log_handler.setFormatter(log_format)
+        if arguments.debug:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+
+        logger.addHandler(log_handler)
+
+    logger.debug("Starting")
+    logger.debug(f"Podcast Name: {env['podcast_name']}")
+
     # Check to see if the feed database file exists. Create file if
     # the file does not exist
     feed_database: FeedDatabase = FeedDatabase(env["db_file"])
@@ -169,8 +183,10 @@ def main() -> None:
     episodes: list[dict[str, Any]] = podcast.fetch(
         feed_url=env["podcast_feed"], max_episodes=env["max_episodes"]
     )
+    logger.debug(f"Feed URL: {env['podcast_feed']}")
 
     # Connect to Mastodon Client
+    logger.debug(f"Mastodon URL: {env['mastodon']['api_url']}")
     mastodon_client: MastodonClient = MastodonClient(
         api_url=env["mastodon"]["api_url"], access_token=env["mastodon"]["secret_file"]
     )
@@ -182,14 +198,14 @@ def main() -> None:
             guid_filter=env["podcast_guid_filter"],
             days=env["recent_days"],
             dry_run=dry_run,
-            debug=arguments.debug,
         )
         new_episodes.reverse()
-        if arguments.debug:
-            print("New Episodes:")
-            pprint(new_episodes)
+
+        logger.debug(f"New Episodes:\n{pformat(new_episodes)}")
 
         for episode in new_episodes:
+            title: str = unsmart_quotes(text=episode["title"])
+            logger.info(f'Posting new "{env["podcast_name"]}" episode "{title}"')
             post_text: str = format_post(
                 podcast_name=env["podcast_name"],
                 episode=episode,
@@ -202,8 +218,7 @@ def main() -> None:
     if not dry_run or not arguments.skip_clean:
         feed_database.clean(days_to_keep=env["db_clean_days"])
 
-    if arguments.debug:
-        print(f"Completed time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')}")
+    logger.debug("Finished")
 
 
 if __name__ == "__main__":

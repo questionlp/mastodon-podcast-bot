@@ -9,6 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
+            "args": ["--debug"],
             "console": "integratedTerminal",
             "justMyCode": true
         }

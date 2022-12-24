@@ -26,11 +26,12 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 | DB_CLEAN_DAYS | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `RECENT_DAYS`. (Default: 90) |
 | RECENT_DAYS | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
 | MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed. (Default: 50) |
+| LOG_FILE | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
 | PODCAST_FEED | URL for the podcast feed the application will pull episodes from. |
 | PODCAST_NAME | Name of the podcast to be included in the post. |
 | PODCAST_GUID_FILTER | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
-| POST_TEMPLATE_DIR | Path of the directory containing the Jinja2 template file. |
-| POST_TEMPLATE | File name of the Jinja2 template file that will be used to format the post. |
+| POST_TEMPLATE_DIR | Path for the directory containing the Jinja2 template file. |
+| POST_TEMPLATE | Path for the Jinja2 template file that will be used to format the post. |
 | MASTODON_SECRET | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
 | MASTODON_API_BASE_URL | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
 

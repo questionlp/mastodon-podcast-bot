@@ -42,6 +42,7 @@ class AppEnvironment:
         config["db_clean_days"]: int = int(dotenv_config.get("DB_CLEAN_DAYS", 90))
         config["recent_days"]: int = int(dotenv_config.get("RECENT_DAYS", 5))
         config["max_episodes"]: int = int(dotenv_config.get("MAX_EPISODES", 50))
+        config["log_file"]: str = dotenv_config.get("LOG_FILE", None)
         config["podcast_feed"]: str = dotenv_config.get("PODCAST_FEED_URL").strip()
         config["podcast_name"]: str = dotenv_config.get("PODCAST_NAME").strip()
         config["podcast_guid_filter"]: str = dotenv_config.get(
