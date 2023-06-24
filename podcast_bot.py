@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.2.0"
+APP_VERSION: str = "0.2.1"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -213,6 +213,7 @@ def main() -> None:
                 template_file=env["post_template"],
             )
             if not dry_run:
+                logger.info(f"Posting {episode}.")
                 mastodon_client.post(content=post_text)
 
     if not dry_run or not arguments.skip_clean:
