@@ -204,8 +204,7 @@ def main() -> None:
         logger.debug(f"New Episodes:\n{pformat(new_episodes)}")
 
         for episode in new_episodes:
-            title: str = unsmart_quotes(text=episode["title"])
-            logger.info(f'Posting new "{env["podcast_name"]}" episode "{title}"')
+            episode["title"]: str = unsmart_quotes(text=episode["title"])
             post_text: str = format_post(
                 podcast_name=env["podcast_name"],
                 episode=episode,
