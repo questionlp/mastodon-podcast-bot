@@ -2,7 +2,7 @@
 # vim: set noai syntax=python ts=4 sw=4:
 # SPDX-License-Identifier: MIT
 #
-# Copyright (c) 2022 Linh Pham
+# Copyright (c) 2022-2023 Linh Pham
 # mastodon-podcast-bot is released under the terms of the MIT License
 
 from argparse import Namespace
@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "0.2.2"
+APP_VERSION: str = "0.3.0"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -102,7 +102,7 @@ def unsmart_quotes(text: str) -> str:
 def format_post(
     episode: dict[str, Any],
     podcast_name: str = None,
-    description_max_length: int = 275,
+    max_description_length: int = 275,
     template_path: str = "templates",
     template_file: str = "post.txt.jinja",
 ) -> str:
@@ -131,9 +131,9 @@ def format_post(
     # Fix issue with HTML2Text causing + to be rendered as \+
     formatted_description = formatted_description.replace(r"\+", "+")
 
-    if len(formatted_description) > description_max_length:
+    if len(formatted_description) > max_description_length:
         formatted_description = (
-            f"{formatted_description[:description_max_length].strip()}...\n"
+            f"{formatted_description[:max_description_length].strip()}...\n"
         )
     else:
         formatted_description = f"{formatted_description.strip()}\n"
@@ -208,6 +208,7 @@ def main() -> None:
             post_text: str = format_post(
                 podcast_name=env["podcast_name"],
                 episode=episode,
+                max_description_length=env["max_description_length"],
                 template_path=env["post_template_dir"],
                 template_file=env["post_template"],
             )
