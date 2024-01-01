@@ -32,7 +32,7 @@ To create the Mastodon OAuth secret file, refer to the [Mastodon.py](https://mas
 
 There are several flags and options that can be set through the command line:
 
-| Flag/Argument | Description |
+| Flag/Option | Description |
 |---------------|-------------|
 | `--dry-run` | Runs the scripts, but skips creating any database entries (though a database file if one doesn't exist) and does not create any posts. |
 | `-e`, `--env-file` | Set a custom path for the `.env` file that contains the required podcast feed and configuration settings. |
