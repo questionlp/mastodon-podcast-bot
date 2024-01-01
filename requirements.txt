@@ -1,5 +1,5 @@
-Mastodon.py==1.8.0
-podcastparser==0.6.8
+Mastodon.py==1.8.1
+podcastparser==0.6.10
 python-dotenv==0.21.0
 html2text==2020.1.16
 Jinja2==3.1.2

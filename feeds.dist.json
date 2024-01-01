@@ -1,0 +1,18 @@
+[
+    {
+        "name": "",
+        "database_file": "feed_info.sqlite3",
+        "database_clean_days": 90,
+        "recent_days": 5,
+        "max_episodes": 50,
+        "log_file": "logs/podcast_bot.log",
+        "max_description_length": 275,
+        "podcast_feed_url": "",
+        "short_name": "",
+        "podcast_guid_filter": null,
+        "mastodon_secret": "",
+        "mastodon_api_base_url": "",
+        "template_directory": "templates",
+        "template_file": "post.txt.jinja"
+    }
+]

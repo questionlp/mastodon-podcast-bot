@@ -1,10 +1,9 @@
-flake8==5.0.4
-pycodestyle==2.9.1
-pytest==7.2.0
-black==22.10.0
+pytest==7.4.3
+black==23.12.0
+ruff==0.1.9
 
-Mastodon.py==1.8.0
-podcastparser==0.6.8
+Mastodon.py==1.8.1
+podcastparser==0.6.10
 python-dotenv==0.21.0
 html2text==2020.1.16
 Jinja2==3.1.2

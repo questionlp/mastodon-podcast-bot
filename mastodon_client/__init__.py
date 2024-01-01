@@ -1,16 +1,14 @@
-# -*- coding: utf-8 -*-
-# vim: set noai syntax=python ts=4 sw=4:
+# Copyright (c) 2022-2024 Linh Pham
+# mastodon-podcast-bot is released under the terms of the MIT License
 # SPDX-License-Identifier: MIT
 #
-# Copyright (c) 2022 Linh Pham
-# mastodon-podcast-bot is released under the terms of the MIT License
-
+# vim: set noai syntax=python ts=4 sw=4:
+"""Mastodon Client Module."""
 from mastodon import Mastodon
 
 
 class MastodonClient:
-    """Simple Mastodon Client that is a wrapper for Mastodon.py used
-    to connect and publish posts."""
+    """Simple Mastodon Client for connecting and publishing posts."""
 
     def __init__(self, api_url: str | None, access_token: str | None) -> None:
         """Class initialization method."""
@@ -20,9 +18,7 @@ class MastodonClient:
             )
 
     def connect(self, api_url: str, access_token: str) -> Mastodon:
-        """Connect and authenticate against a Mastodon instance API
-        using OAuth2."""
-
+        """Connect to and authenticate against a Mastodon instance."""
         return Mastodon(access_token=access_token, api_base_url=api_url)
 
     def post(

@@ -1,5 +1,14 @@
-# Exclude SQLite file
-feed_info.sqlite3
+# Exclude SQLite files
+dbfiles/*
+!dbfiles/README.md
+*.sqlite3
+
+# Feeds config file
+feeds.json
+
+# Exclude log files
+logs/*
+!logs/README.md
 
 # Exclude secrets files
 secrets/*
