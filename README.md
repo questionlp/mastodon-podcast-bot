@@ -1,16 +1,16 @@
 # mastodon-podcast-bot
 
-Python application that parses a podcast RSS/Atom feed and publishes a post to a Mastodon account if it sees a new entry.
+Python script that parses a podcast RSS/Atom feed and publishes a post to a Mastodon account if it sees a new entry.
 
 ## Requirements
 
-This application requires Python 3.10 or higher.
+This project requires Python 3.10 or higher.
 
-Running this application using any version of Python below 3.10 or using a Python interpreter that does not support language features included in Python 3.10 is **not** supported.
+Running scripts included in this project using any version of Python below 3.10 or using a Python interpreter that does not support language features included in Python 3.10 is **not** supported.
 
 ## Installing
 
-It is highly recommended that you set up a virtual environment for this application and install the dependencies within the virtual environment. The following example uses Python's `venv` module to create the virtual environment, once a copy of this repository as been cloned locally.
+It is highly recommended that you set up a virtual environment for this project and install the dependencies within the virtual environment. The following example uses Python's `venv` module to create the virtual environment, once a copy of this repository as been cloned locally.
 
 ```bash
 python3 -m venv venv
@@ -22,7 +22,7 @@ python3 -m pip install -r requirements.txt
 
 Starting with version 1.0, the script supports using either an `.env` environment file to store configuration information for a single feed or a `feeds.json` JSON file to store configuration information for multiple feeds.
 
-The application will automatically create the SQLite3 database if one does not already exist.
+The script will automatically create the SQLite3 database if one does not already exist.
 
 ### Mastodon Credentials and Authentication
 
@@ -35,14 +35,14 @@ There are several flags and options that can be set through the command line:
 | Flag/Argument | Description |
 |---------------|-------------|
 | `--dry-run` | Runs the scripts, but skips creating any database entries (though a database file if one doesn't exist) and does not create any posts. |
-| `-e`, `--env-file` | Set a custom path for the `.env` file that contains the required podcast feed and application settings. |
-| `-f`, `--feeds-file` | Set a custom path for the feeds JSON file that contains the required podcast feed and application settings. |
+| `-e`, `--env-file` | Set a custom path for the `.env` file that contains the required podcast feed and configuration settings. |
+| `-f`, `--feeds-file` | Set a custom path for the feeds JSON file that contains the required podcast feed and configuration settings. |
 | `-m`, `--multiple-feeds` | Runs the script in multi-feed mode, which uses information stored in a podcast feed JSON file. |
 | `--skip-clean` | Skips the database clean-up step to remove old entries. This step is also skipped if the `--dry-run` flag is also set. |
 
 ### Single Feed .env File
 
-Once the dependencies have been installed, make a copy of the `.env.dist` file and name the file `.env`. This file will contain configuration settings that the application will need.
+Once the dependencies have been installed, make a copy of the `.env.dist` file and name the file `.env`. This file will contain configuration settings that the script will need.
 
 | Setting | Description |
 |---------|-------------|
@@ -52,7 +52,7 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 | MASTODON_API_BASE_URL | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
 | DB_FILE | Location of the SQLite3 file that will be used to store episodes that the script has already been processed. |
 | DB_CLEAN_DAYS | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `RECENT_DAYS`. (Default: 90) |
-| LOG_FILE | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
+| LOG_FILE | Path for the log file the script will use to log events to. If no log file path is provided, logging will be disabled. |
 | RECENT_DAYS | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
 | MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed and process. (Default: 50) |
 | MAX_DESCRIPTION_LENGTH | Maximum length (in characters) of the podcast episode description to be included in the post. (Default: 275) |
@@ -71,7 +71,7 @@ The `feeds.json` file needs to be a valid JSON file that contains an array of ob
 | database_clean_days | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `recent_days`. (Default: 90) |
 | recent_days | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
 | max_episodes | Maximum number of episodes to retrieve from the podcast feed and process. (Default: 50) |
-| log_file | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
+| log_file | Path for the log file the script will use to log events to. If no log file path is provided, logging will be disabled. |
 | max_description_length | Maximum length (in characters) of the podcast episode description to be included in the post. (Default: 275) |
 | podcast_feed_url | URL for the podcast feed to retrieve and parse episodes. |
 | short_name | Short podcast identifier used to tag each entry in the database. |
@@ -95,4 +95,4 @@ This project follows version 2.1 of the [Contributor Covenant's](https://www.con
 
 ## License
 
-This application is licensed under the terms of the [MIT License](LICENSE).
+This project is licensed under the terms of the [MIT License](LICENSE).
