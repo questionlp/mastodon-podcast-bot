@@ -28,7 +28,7 @@ The script will automatically create the SQLite3 database if one does not alread
 
 To create the Mastodon OAuth secret file, refer to the [Mastodon.py](https://mastodonpy.readthedocs.io/en/stable/) documentation for instructions. Any secret files should be stored under `secrets/`, as any file (with exception of the included [README.md](secrets/README.md) file) are filtered out by way of the repository's `.gitignore`.
 
-### Command-Line Arguments and Options
+### Command-Line Flags and Options
 
 There are several flags and options that can be set through the command line:
 
