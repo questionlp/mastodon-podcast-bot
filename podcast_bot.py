@@ -151,7 +151,6 @@ def format_post(
 def main() -> None:
     """Fetch podcast episodes and post new episodes."""
     arguments: Namespace = AppCommand().parse()
-    print(arguments)
     if arguments.version:
         print(f"Version {APP_VERSION}")
         return
