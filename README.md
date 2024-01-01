@@ -15,47 +15,79 @@ It is highly recommended that you set up a virtual environment for this applicat
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
-Once the dependencies have been installed, make a copy of the `.env.dist` file and name the file `.env`. This file will contain configuration settings that the application will need.
+## Running the Script
 
-| Setting | Description |
-|---------|-------------|
-| DB_FILE | Location of the SQLite3 file that will be used to store episodes that the application has already been processed. |
-| DB_CLEAN_DAYS | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `RECENT_DAYS`. (Default: 90) |
-| RECENT_DAYS | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
-| MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed. (Default: 50) |
-| LOG_FILE | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
-| PODCAST_FEED | URL for the podcast feed the application will pull episodes from. |
-| PODCAST_NAME | Name of the podcast to be included in the post. |
-| PODCAST_GUID_FILTER | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
-| POST_TEMPLATE_DIR | Path for the directory containing the Jinja2 template file. |
-| POST_TEMPLATE | Path for the Jinja2 template file that will be used to format the post. |
-| MASTODON_SECRET | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
-| MASTODON_API_BASE_URL | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
+Starting with version 1.0, the script supports using either an `.env` environment file to store configuration information for a single feed or a `feeds.json` JSON file to store configuration information for multiple feeds.
+
+The application will automatically create the SQLite3 database if one does not already exist.
+
+### Mastodon Credentials and Authentication
 
 To create the Mastodon OAuth secret file, refer to the [Mastodon.py](https://mastodonpy.readthedocs.io/en/stable/) documentation for instructions. Any secret files should be stored under `secrets/`, as any file (with exception of the included [README.md](secrets/README.md) file) are filtered out by way of the repository's `.gitignore`.
 
-Running the application can be done by running the following command:
-
-```bash
-python3 podcast_bot.py
-```
-
-The application will automatically create the SQLite3 database if one does not already exist.
+### Command-Line Arguments and Options
 
 There are several flags and options that can be set through the command line:
 
 | Flag/Argument | Description |
 |---------------|-------------|
-| `--dry-run` | Runs the application, but skips creating any database entries (though a database file if one doesn't exist) and does not create any posts. |
+| `--dry-run` | Runs the scripts, but skips creating any database entries (though a database file if one doesn't exist) and does not create any posts. |
+| `-e`, `--env-file file` | Set a custom path for the `.env` file that contains the required podcast feed and application settings. |
+| `-f`, `--feeds-file file` | Set a custom path for the feeds JSON file that contains the required podcast feed and application settings. |
+| `-m`, `--multiple-feeds` | Runs the script in multi-feed mode, which uses information stored in a podcast feed JSON file. |
 | `--skip-clean` | Skips the database clean-up step to remove old entries. This step is also skipped if the `--dry-run` flag is also set. |
-| `--env file` | Set a custom path for the `.env` file that contains the required application settings. |
+
+### Single Feed .env File
+
+Once the dependencies have been installed, make a copy of the `.env.dist` file and name the file `.env`. This file will contain configuration settings that the application will need.
+
+| Setting | Description |
+|---------|-------------|
+| PODCAST_NAME | Name of the podcast to be included in the post. |
+| PODCAST_FEED_URL | URL for the podcast feed to retrieve and parse episodes. |
+| MASTODON_SECRET | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
+| MASTODON_API_BASE_URL | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
+| DB_FILE | Location of the SQLite3 file that will be used to store episodes that the script has already been processed. |
+| DB_CLEAN_DAYS | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `RECENT_DAYS`. (Default: 90) |
+| LOG_FILE | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
+| RECENT_DAYS | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
+| MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed and process. (Default: 50) |
+| MAX_DESCRIPTION_LENGTH | Maximum length (in characters) of the podcast episode description to be included in the post. (Default: 275) |
+| PODCAST_GUID_FILTER | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
+| POST_TEMPLATE_DIR | Path for the directory containing the Jinja2 template file. |
+| POST_TEMPLATE | Path for the Jinja2 template file that will be used to format the post. |
+
+### Multiple Feed feeds.json File
+
+The `feeds.json` file needs to be a valid JSON file that contains an array of objects, one for each podcast, with the following attributes:
+
+| Attribute | Description |
+|---------|-------------|
+| name | Name of the podcast to be included in the post. |
+| database_file | Location of the SQLite3 file that will be used to store episodes that the script has already been processed. |
+| database_clean_days | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `recent_days`. (Default: 90) |
+| recent_days | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |
+| max_episodes | Maximum number of episodes to retrieve from the podcast feed and process. (Default: 50) |
+| log_file | Path for the log file the application will use to log events to. If no log file path is provided, logging will be disabled. |
+| max_description_length | Maximum length (in characters) of the podcast episode description to be included in the post. (Default: 275) |
+| podcast_feed_url | URL for the podcast feed to retrieve and parse episodes. |
+| short_name | Short podcast identifier used to tag each entry in the database. |
+| podcast_guid_filter | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
+| mastodon_secret | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
+| mastodon_api_base_url | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
+| template_directory | Path for the directory containing the Jinja2 template file. |
+| template_file | Path for the Jinja2 template file that will be used to format the post. |
 
 ## Development
 
-This application makes generous use to type hints to help with code documentation and can be very helpful when using Python language servers in Visual Studio Code, tools such as [mypy](http://mypy-lang.org), and others.
+Use the included `requirements-dev.txt` to install both the script and script development dependencies.
+
+The project makes generous use to type hints to help with code documentation and can be very helpful when using Python language servers in Visual Studio Code, tools such as [mypy](http://mypy-lang.org), and others.
+
+For code linting and formatting, the project makes use of Ruff and Black.
 
 ## Code of Conduct
 

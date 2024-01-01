@@ -12,6 +12,15 @@
             "args": ["--debug"],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Python: podcast_bot.py --multiple-feeds",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/podcast_bot.py",
+            "args": ["--multiple-feeds", "--debug"],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
