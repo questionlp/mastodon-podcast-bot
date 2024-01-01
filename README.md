@@ -35,8 +35,8 @@ There are several flags and options that can be set through the command line:
 | Flag/Argument | Description |
 |---------------|-------------|
 | `--dry-run` | Runs the scripts, but skips creating any database entries (though a database file if one doesn't exist) and does not create any posts. |
-| `-e`, `--env-file file` | Set a custom path for the `.env` file that contains the required podcast feed and application settings. |
-| `-f`, `--feeds-file file` | Set a custom path for the feeds JSON file that contains the required podcast feed and application settings. |
+| `-e`, `--env-file` | Set a custom path for the `.env` file that contains the required podcast feed and application settings. |
+| `-f`, `--feeds-file` | Set a custom path for the feeds JSON file that contains the required podcast feed and application settings. |
 | `-m`, `--multiple-feeds` | Runs the script in multi-feed mode, which uses information stored in a podcast feed JSON file. |
 | `--skip-clean` | Skips the database clean-up step to remove old entries. This step is also skipped if the `--dry-run` flag is also set. |
 
