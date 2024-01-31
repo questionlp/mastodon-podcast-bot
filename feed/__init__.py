@@ -4,8 +4,8 @@
 #
 # vim: set noai syntax=python ts=4 sw=4:
 """Podcast Feed Module."""
-import urllib.request
 from typing import Any
+from urllib import request
 
 import podcastparser
 
@@ -13,11 +13,17 @@ import podcastparser
 class PodcastFeed:
     """Podcast Feed Fetcher."""
 
-    def fetch(self, feed_url: str, max_episodes: int = 50) -> list[dict[str, Any]]:
+    def fetch(
+        self,
+        feed_url: str,
+        max_episodes: int = 50,
+        user_agent="Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+    ) -> list[dict[str, Any]]:
         """Fetch items from the requested podcast feed."""
+        feed_request = request.Request(url=feed_url, headers={"User-Agent": user_agent})
         feed: dict[str, Any] = podcastparser.parse(
             url=feed_url,
-            stream=urllib.request.urlopen(feed_url),
+            stream=request.urlopen(feed_request),
             max_episodes=max_episodes,
         )
         return feed["episodes"]

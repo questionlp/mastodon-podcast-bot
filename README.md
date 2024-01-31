@@ -57,6 +57,7 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 | MAX_EPISODES | Maximum number of episodes to retrieve from the podcast feed and process. (Default: 50) |
 | MAX_DESCRIPTION_LENGTH | Maximum length (in characters) of the podcast episode description to be included in the post. (Default: 275) |
 | PODCAST_GUID_FILTER | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
+| USER_AGENT | User Agent string to provide when retrieving a podcast feed. (Default: User Agent string for Firefox 122 on Linux). |
 | POST_TEMPLATE_DIR | Path for the directory containing the Jinja2 template file. |
 | POST_TEMPLATE | Path for the Jinja2 template file that will be used to format the post. |
 
@@ -78,6 +79,7 @@ The `feeds.json` file needs to be a valid JSON file that contains an array of ob
 | podcast_guid_filter | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
 | mastodon_secret | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
 | mastodon_api_base_url | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
+| user_agent | User Agent string to provide when retrieving a podcast feed. (Default: User Agent string for Firefox 122 on Linux). |
 | template_directory | Path for the directory containing the Jinja2 template file. |
 | template_file | Path for the Jinja2 template file that will be used to format the post. |
 
