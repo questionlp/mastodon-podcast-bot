@@ -27,6 +27,9 @@ class FeedSettings(NamedTuple):
     max_episodes: int = 50
     max_description_length: int = 275
     guid_filter: str = None
+    user_agent: str = (
+        "Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0"
+    )
     template_directory: str = "templates"
     template_file: str = "post.txt.jinja"
 
@@ -75,6 +78,10 @@ class AppConfig:
                 max_episodes=int(feed.get("max_episodes", 50)),
                 max_description_length=int(feed.get("max_description_length", 275)),
                 guid_filter=feed.get("podcast_guid_filter", "").strip(),
+                user_agent=feed.get(
+                    "user_agent",
+                    "Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+                ).strip(),
                 template_directory=feed.get("template_directory", "templates").strip(),
                 template_file=feed.get("template_file", "post.txt.jinja").strip(),
             )
@@ -121,6 +128,10 @@ class AppEnvironment:
                 dotenv_config.get("MAX_DESCRIPTION_LENGTH", 275)
             ),
             guid_filter=dotenv_config.get("PODCAST_GUID_FILTER", "").strip(),
+            user_agent=dotenv_config.get(
+                "USER_AGENT",
+                "Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+            ).strip(),
             template_directory=dotenv_config.get(
                 "POST_TEMPLATE_DIR", "templates"
             ).strip(),

@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "1.0.0"
+APP_VERSION: str = "1.1.0"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -190,7 +190,9 @@ def main() -> None:
         # Pull episodes from the configured podcast feed
         podcast: PodcastFeed = PodcastFeed()
         episodes: list[dict[str, Any]] = podcast.fetch(
-            feed_url=feed.feed_url, max_episodes=feed.max_episodes
+            feed_url=feed.feed_url,
+            max_episodes=feed.max_episodes,
+            user_agent=feed.user_agent,
         )
         logger.debug(f"Feed URL: {feed.feed_url}")
 
@@ -215,7 +217,7 @@ def main() -> None:
             logger.debug(f"New Episodes:\n{pformat(new_episodes)}")
 
             for episode in new_episodes:
-                episode["title"]: str = unsmart_quotes(text=episode["title"])
+                episode["title"] = unsmart_quotes(text=episode["title"])
                 post_text: str = format_post(
                     podcast_name=feed.podcast_name,
                     episode=episode,
