@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: podcast_bot.py",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
             "args": ["--debug"],
@@ -15,7 +15,7 @@
         },
         {
             "name": "Python: podcast_bot.py --multiple-feeds",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
             "args": ["--multiple-feeds", "--debug"],
@@ -24,7 +24,7 @@
         },
         {
             "name": "Python: podcast_bot.py --multiple-feeds --dry-run",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
             "args": ["--multiple-feeds", "--debug", "--dry-run"],

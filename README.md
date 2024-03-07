@@ -48,7 +48,10 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 |---------|-------------|
 | PODCAST_NAME | Name of the podcast to be included in the post. |
 | PODCAST_FEED_URL | URL for the podcast feed to retrieve and parse episodes. |
-| MASTODON_SECRET | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
+| MASTODON_USE_SECRETS_FILE | Set whether or not a Mastodon secrets file will be used for authenticiation. (Default: True ) |
+| MASTODON_SECRETS_FILE (or MASTODON_SECRET) | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. Note that the `MASTODON_SECRETS_FILE` setting is replacing the `MASTODON_SECRET` setting. The value from `MASTODON_SECRET` is still being read, but the setting will be deprecated in the near future. |
+| MASTODON_CLIENT_SECRET | Mastodon API client secret used for authentication. |
+| MASTODON_ACCESS_TOKEN | Mastodon API access token used for authentiication. |
 | MASTODON_API_BASE_URL | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
 | DB_FILE | Location of the SQLite3 file that will be used to store episodes that the script has already been processed. |
 | DB_CLEAN_DAYS | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `RECENT_DAYS`. (Default: 90) |
@@ -77,7 +80,10 @@ The `feeds.json` file needs to be a valid JSON file that contains an array of ob
 | podcast_feed_url | URL for the podcast feed to retrieve and parse episodes. |
 | short_name | Short podcast identifier used to tag each entry in the database. |
 | podcast_guid_filter | String used as a filter episode GUIDs values to include and exclude GUIDs that to not include the string. |
-| mastodon_secret | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. |
+| mastodon_use_secrets_file | Set whether or not a Mastodon secrets file will be used for authenticiation. (Default: True ) |
+| mastodon_secrets_file (or mastodon_secret) | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. Note that the `mastodon_secrets_file` key is replacing the `mastodon_secret` key. The value from `mastodon_secret` is still being read, but the setting will be deprecated in the near future. |
+| mastodon_client_secret | Mastodon API client secret used for authentication. |
+| mastodon_access_token | Mastodon API access token used for authentiication. |
 | mastodon_api_base_url | The base API URL for your Mastodon instance. Refer to your Mastodon instance for the appropriate URL to use. |
 | user_agent | User Agent string to provide when retrieving a podcast feed. (Default: User Agent string for Firefox 122 on Linux). |
 | template_directory | Path for the directory containing the Jinja2 template file. |

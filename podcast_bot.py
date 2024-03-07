@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "1.1.0"
+APP_VERSION: str = "1.2.0"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -198,10 +198,18 @@ def main() -> None:
 
         # Connect to Mastodon Client
         logger.debug(f"Mastodon URL: {feed.mastodon_api_base_url}")
-        mastodon_client: MastodonClient = MastodonClient(
-            api_url=feed.mastodon_api_base_url,
-            access_token=feed.mastodon_secret,
-        )
+        if feed.mastodon_use_secrets_file:
+            mastodon_client: MastodonClient = MastodonClient(
+                api_url=feed.mastodon_api_base_url,
+                client_secret=None,
+                access_token=feed.mastodon_secret,
+            )
+        else:
+            mastodon_client: MastodonClient = MastodonClient(
+                api_url=feed.mastodon_api_base_url,
+                client_secret=feed.mastodon_client_secret,
+                access_token=feed.mastodon_access_token,
+            )
 
         if episodes:
             new_episodes: list[dict[str, Any]] = retrieve_new_episodes(
