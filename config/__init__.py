@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
+import dotenv
 from dotenv import dotenv_values
 
 
@@ -18,8 +19,11 @@ class FeedSettings(NamedTuple):
     name: str
     podcast_name: str
     feed_url: str
-    mastodon_secret: str
+    mastodon_use_secrets_file: bool
     mastodon_api_base_url: str
+    mastodon_secrets_file: str = None
+    mastodon_client_secret: str = None
+    mastodon_access_token: str = None
     database_file: str = "feed_info.sqlite3"
     database_clean_days: int = 90
     log_file: str = "logs/podcast_bot.log"
@@ -61,16 +65,45 @@ class AppConfig:
                 print("ERROR: Podcast feed information is not valid.")
                 sys.exit(1)
 
-            if "mastodon_secret" not in feed or "mastodon_api_base_url" not in feed:
-                print("ERROR: Feed settings does not contain valid Mastodon settings.")
+            if "mastodon_api_base_url" not in feed:
+                print("ERROR: Feed settings does not contain a Mastodon API base URL.")
                 sys.exit(1)
+
+            if "mastodon_use_secrets_file" in feed:
+                use_secrets_file = bool(feed["mastodon_use_secrets_file"])
+            else:
+                use_secrets_file = True
+
+            if use_secrets_file and "mastodon_secret" in feed:
+                secrets_file = feed["mastodon_secret"].strip()
+            elif use_secrets_file and "mastodon_secrets_file" in feed:
+                secrets_file = feed["mastodon_secrets_file"].strip()
+
+            if use_secrets_file and not secrets_file:
+                print(
+                    "ERROR: Feed settings does not contain a valid Mastodon secrets file path."
+                )
+                sys.exit(1)
+
+            if not use_secrets_file and (
+                "mastodon_client_secret" not in feed
+                or "mastodon_access_token" not in feed
+            ):
+                print(
+                    "ERROR: Feed settings does not contain valid Mastodon client secret or access token."
+                )
 
             feed_settings = FeedSettings(
                 name=feed["feed_name"].strip(),
                 podcast_name=feed["podcast_name"].strip(),
                 feed_url=feed["podcast_feed_url"].strip(),
-                mastodon_secret=feed["mastodon_secret"].strip(),
-                mastodon_api_base_url=feed["mastodon_api_base_url"].strip(),
+                mastodon_use_secrets_file=use_secrets_file,
+                mastodon_secrets_file=secrets_file
+                if use_secrets_file and secrets_file
+                else None,
+                mastodon_client_secret=feed.get("mastodon_client_secret", "").strip(),
+                mastodon_access_token=feed.get("mastodon_access_token", "").strip(),
+                mastodon_api_base_url=feed.get("mastodon_api_base_url", "").strip(),
                 database_file=feed.get("database_file", "feed_info.sqlite3").strip(),
                 database_clean_days=int(feed.get("database_clean_days", 90)),
                 log_file=feed.get("log_file", "logs/podcast_bot.log").strip(),
@@ -106,19 +139,51 @@ class AppEnvironment:
             print("ERROR: Podcast feed information is not valid.")
             sys.exit(1)
 
-        if (
-            "MASTODON_SECRET" not in dotenv_config
-            or "MASTODON_API_BASE_URL" not in dotenv_config
+        if "MASTODON_API_BASE_URL" not in dotenv_config:
+            print("ERROR: Feed settings does not contain a Mastodon API base URL.")
+            sys.exit(1)
+
+        if "MASTODON_USE_SECRETS_FILE" in dotenv_config:
+            use_secrets_file = bool(
+                dotenv_config.get("MASTODON_USER_SECRETS_FILE", True)
+            )
+        else:
+            use_secrets_file = True
+
+        if use_secrets_file and "MASTODON_SECRET" in dotenv_config:
+            secrets_file = dotenv_config["MASTODON_SECRET"].strip()
+        elif use_secrets_file and "MASTODON_SECRETS_FILE" in dotenv_config:
+            secrets_file = dotenv_config["MASTODON_SECRETS_FILE"].strip()
+        else:
+            print(
+                "ERROR: Feed settings does not contain a valid Mastodon secrets file path."
+            )
+            sys.exit(1)
+
+        if not use_secrets_file and (
+            "MASTODON_CLIENT_SECRET" not in dotenv_config
+            or "MASTODON_ACCESS_TOKEN" not in dotenv_config
         ):
-            print("ERROR: Feed settings does not contain valid Mastodon settings.")
+            print(
+                "ERROR: Feed settings does not contain valid Mastodon client secret or access token."
+            )
             sys.exit(1)
 
         feed_settings = FeedSettings(
             name=dotenv_config.get("PODCAST_NAME").strip(),
             podcast_name=dotenv_config.get("PODCAST_NAME").strip(),
             feed_url=dotenv_config.get("PODCAST_FEED_URL").strip(),
-            mastodon_secret=dotenv_config["MASTODON_SECRET"].strip(),
-            mastodon_api_base_url=dotenv_config["MASTODON_API_BASE_URL"].strip(),
+            mastodon_use_secrets_file=use_secrets_file,
+            mastodon_secret=secrets_file if use_secrets_file and secrets_file else None,
+            mastodon_client_secret=dotenv_config.get(
+                "MASTODON_CLIENT_SECRET", ""
+            ).strip(),
+            mastodon_access_token=dotenv_config.get(
+                "MASTODON_ACCESS_CLIENT", ""
+            ).strip(),
+            mastodon_api_base_url=dotenv_config.get(
+                "MASTODON_API_BASE_URL", ""
+            ).strip(),
             database_file=dotenv_config.get("DB_FILE", "feed_info.sqlite3").strip(),
             database_clean_days=int(dotenv_config.get("DB_CLEAN_DAYS", 90)),
             log_file=dotenv_config.get("LOG_FILE", "logs/podcast_bot.log").strip(),
