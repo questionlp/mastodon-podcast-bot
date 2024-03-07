@@ -202,7 +202,7 @@ def main() -> None:
             mastodon_client: MastodonClient = MastodonClient(
                 api_url=feed.mastodon_api_base_url,
                 client_secret=None,
-                access_token=feed.mastodon_secret,
+                access_token=feed.mastodon_secrets_file,
             )
         else:
             mastodon_client: MastodonClient = MastodonClient(
