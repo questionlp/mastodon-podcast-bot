@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: podcast_bot.py",
+            "name": "Python: podcast_bot.py --debug",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
@@ -14,7 +14,7 @@
             "justMyCode": true
         },
         {
-            "name": "Python: podcast_bot.py --multiple-feeds",
+            "name": "Python: podcast_bot.py --multiple-feeds --debug",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
@@ -23,11 +23,11 @@
             "justMyCode": true
         },
         {
-            "name": "Python: podcast_bot.py --multiple-feeds --dry-run",
+            "name": "Python: podcast_bot.py --multiple-feeds --dry-run --debug",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/podcast_bot.py",
-            "args": ["--multiple-feeds", "--debug", "--dry-run"],
+            "args": ["--multiple-feeds", "--dry-run", "--debug"],
             "console": "integratedTerminal",
             "justMyCode": true
         }

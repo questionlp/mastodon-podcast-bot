@@ -78,7 +78,8 @@ class AppConfig:
                 secrets_file = feed["mastodon_secret"].strip()
             elif use_secrets_file and "mastodon_secrets_file" in feed:
                 secrets_file = feed["mastodon_secrets_file"].strip()
-            else:
+
+            if use_secrets_file and not secrets_file:
                 print(
                     "ERROR: Feed settings does not contain a valid Mastodon secrets file path."
                 )
@@ -97,7 +98,9 @@ class AppConfig:
                 podcast_name=feed["podcast_name"].strip(),
                 feed_url=feed["podcast_feed_url"].strip(),
                 mastodon_use_secrets_file=use_secrets_file,
-                mastodon_secrets_file=secrets_file,
+                mastodon_secrets_file=secrets_file
+                if use_secrets_file and secrets_file
+                else None,
                 mastodon_client_secret=feed.get("mastodon_client_secret", "").strip(),
                 mastodon_access_token=feed.get("mastodon_access_token", "").strip(),
                 mastodon_api_base_url=feed.get("mastodon_api_base_url", "").strip(),
@@ -171,7 +174,7 @@ class AppEnvironment:
             podcast_name=dotenv_config.get("PODCAST_NAME").strip(),
             feed_url=dotenv_config.get("PODCAST_FEED_URL").strip(),
             mastodon_use_secrets_file=use_secrets_file,
-            mastodon_secret=secrets_file,
+            mastodon_secret=secrets_file if use_secrets_file and secrets_file else None,
             mastodon_client_secret=dotenv_config.get(
                 "MASTODON_CLIENT_SECRET", ""
             ).strip(),
