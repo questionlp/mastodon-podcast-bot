@@ -1,9 +1,9 @@
-pytest==7.4.3
-black==24.3.0
-ruff==0.1.9
+ruff==0.5.1
+black==24.4.2
+pytest==8.1.2
 
 Mastodon.py==1.8.1
 podcastparser==0.6.10
-python-dotenv==0.21.0
-html2text==2020.1.16
+python-dotenv==1.0.1
+html2text==2024.2.26
 Jinja2==3.1.4

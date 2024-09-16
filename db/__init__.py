@@ -32,7 +32,8 @@ class FeedDatabase:
 
         database: Connection = sqlite3.connect(db_file)
         database.execute(
-            "CREATE TABLE episodes(podcast_name str, guid str, enclosure_url str, processed str)"
+            "CREATE TABLE episodes(podcast_name str, guid str, "
+            "enclosure_url str, processed str)"
         )
         database.commit()
         database.close()
@@ -41,7 +42,8 @@ class FeedDatabase:
     def _migrate(self) -> None:
         """Run any required database migration steps."""
         cursor = self.connection.execute(
-            "SELECT name FROM pragma_table_info('episodes') WHERE name = 'enclosure_url'"
+            "SELECT name FROM pragma_table_info('episodes') "
+            "WHERE name = 'enclosure_url'"
         )
         result = cursor.fetchone()
         cursor.close()
@@ -72,16 +74,25 @@ class FeedDatabase:
         feed_name: str = None,
         timestamp: datetime = _timestamp,
     ) -> None:
-        """Insert feed episode GUID into the feed database with a timestamp (default: current date/time)."""
+        """Insert feed episode GUID into the feed database with a timestamp.
+
+        Default: current date/time.
+        """
         if enclosure_url:
             self.connection.execute(
-                "INSERT INTO episodes (guid, enclosure_url, podcast_name, processed) VALUES (?, ?, ?, ?)",
+                (
+                    "INSERT INTO episodes (guid, enclosure_url, podcast_name, "
+                    "processed) VALUES (?, ?, ?, ?)"
+                ),
                 (guid, enclosure_url, feed_name, timestamp),
             )
             self.connection.commit()
         else:
             self.connection.execute(
-                "INSERT INTO episodes (guid, podcast_name, processed) VALUES (?, ?, ?)",
+                (
+                    "INSERT INTO episodes (guid, podcast_name, processed) "
+                    "VALUES (?, ?, ?)"
+                ),
                 (guid, feed_name, timestamp),
             )
             self.connection.commit()
@@ -92,7 +103,10 @@ class FeedDatabase:
         episode: dict[str, Any] = {}
         if feed_name:
             result: Cursor = self.connection.execute(
-                "SELECT guid, processed FROM episodes WHERE guid = ? AND podcast_name = ? LIMIT 1",
+                (
+                    "SELECT guid, processed FROM episodes WHERE guid = ? "
+                    "AND podcast_name = ? LIMIT 1"
+                ),
                 (episode_guid, feed_name),
             )
             episode["guid"], episode["processed"] = result.fetchone()
@@ -109,13 +123,17 @@ class FeedDatabase:
         urls: list[str] = []
         if feed_name:
             for url in self.connection.execute(
-                "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL AND podcast_name = ?",
+                (
+                    "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url "
+                    "IS NOT NULL AND podcast_name = ?"
+                ),
                 (feed_name,),
             ):
                 urls.append(url[0])
         else:
             for url in self.connection.execute(
-                "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL"
+                "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url "
+                "IS NOT NULL"
             ):
                 urls.append(url[0])
 
@@ -126,7 +144,10 @@ class FeedDatabase:
         guids: list[str] = []
         if feed_name:
             for guid in self.connection.execute(
-                "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL AND podcast_name = ?",
+                (
+                    "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL "
+                    "AND podcast_name = ?"
+                ),
                 (feed_name,),
             ):
                 guids.append(guid[0])

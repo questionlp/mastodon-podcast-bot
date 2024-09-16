@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-import dotenv
 from dotenv import dotenv_values
 
 
@@ -44,8 +43,8 @@ class AppConfig:
     def parse(self, feeds_file: str = "feeds.json") -> list[FeedSettings]:
         """Parse podcast feeds settings."""
         feeds_path = Path.cwd() / feeds_file
-        with feeds_path.open(mode="r", encoding="utf-8") as feeds_file:
-            feeds = json.load(feeds_file)
+        with feeds_path.open(mode="r", encoding="utf-8") as _feeds_file:
+            feeds = json.load(_feeds_file)
             if not feeds:
                 print("ERROR: Podcast Feeds Settings JSON file could not be parsed.")
                 sys.exit(1)
@@ -80,9 +79,7 @@ class AppConfig:
                 secrets_file = feed["mastodon_secrets_file"].strip()
 
             if use_secrets_file and not secrets_file:
-                print(
-                    "ERROR: Feed settings does not contain a valid Mastodon secrets file path."
-                )
+                print("ERROR: Mastodon secrets file path setting not found.")
                 sys.exit(1)
 
             if not use_secrets_file and (
@@ -90,7 +87,7 @@ class AppConfig:
                 or "mastodon_access_token" not in feed
             ):
                 print(
-                    "ERROR: Feed settings does not contain valid Mastodon client secret or access token."
+                    "ERROR: Mastodon client secret or access token setting not found."
                 )
 
             feed_settings = FeedSettings(
@@ -98,9 +95,9 @@ class AppConfig:
                 podcast_name=feed["podcast_name"].strip(),
                 feed_url=feed["podcast_feed_url"].strip(),
                 mastodon_use_secrets_file=use_secrets_file,
-                mastodon_secrets_file=secrets_file
-                if use_secrets_file and secrets_file
-                else None,
+                mastodon_secrets_file=(
+                    secrets_file if use_secrets_file and secrets_file else None
+                ),
                 mastodon_client_secret=feed.get("mastodon_client_secret", "").strip(),
                 mastodon_access_token=feed.get("mastodon_access_token", "").strip(),
                 mastodon_api_base_url=feed.get("mastodon_api_base_url", "").strip(),
@@ -121,6 +118,9 @@ class AppConfig:
             feeds_settings.append(feed_settings)
 
         return feeds_settings
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 class AppEnvironment:
@@ -155,18 +155,14 @@ class AppEnvironment:
         elif use_secrets_file and "MASTODON_SECRETS_FILE" in dotenv_config:
             secrets_file = dotenv_config["MASTODON_SECRETS_FILE"].strip()
         else:
-            print(
-                "ERROR: Feed settings does not contain a valid Mastodon secrets file path."
-            )
+            print("ERROR: Mastodon secrets file path setting not found.")
             sys.exit(1)
 
         if not use_secrets_file and (
             "MASTODON_CLIENT_SECRET" not in dotenv_config
             or "MASTODON_ACCESS_TOKEN" not in dotenv_config
         ):
-            print(
-                "ERROR: Feed settings does not contain valid Mastodon client secret or access token."
-            )
+            print("ERROR: Mastodon client secret or access token not found.")
             sys.exit(1)
 
         feed_settings = FeedSettings(
@@ -204,3 +200,6 @@ class AppEnvironment:
         )
 
         return [feed_settings]
+
+    def __str__(self):
+        return self.__class__.__name__

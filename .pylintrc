@@ -1,0 +1,4 @@
+[design]
+max-args = 8
+max-locals = 20
+max-nested-blocks = 8

@@ -27,3 +27,6 @@ class PodcastFeed:
             max_episodes=max_episodes,
         )
         return feed["episodes"]
+
+    def __str__(self):
+        return self.__class__.__name__

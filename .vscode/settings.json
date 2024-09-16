@@ -4,8 +4,11 @@
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
             "source.fixAll": "explicit",
-            "source.sortImports": "never"
+            "source.sortImports": "explicit",
         },
         "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "flake8.args": [
+        "--ignore=W503",
+    ]
 }

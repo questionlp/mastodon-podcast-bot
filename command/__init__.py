@@ -13,7 +13,7 @@ class AppCommand:
     def parse(self) -> Namespace:
         """Parse command-line arguments, options and flags using ArgumentParser."""
         parser: ArgumentParser = ArgumentParser(
-            description="Fetch items from a podcast feed and publish new items to a Mastodon account."
+            description="Fetch items from a podcast feed and publish new items."
         )
         parser.add_argument(
             "-m",
@@ -56,3 +56,6 @@ class AppCommand:
         )
 
         return parser.parse_args()
+
+    def __str__(self):
+        return self.__class__.__name__
