@@ -1,7 +1,20 @@
 [tool.black]
-required-version = "24.4.2"
+required-version = "24.8.0"
 target-version = ["py310", "py311", "py312"]
-line-length = 88
+line-length = 100
+
+[tool.pytest.ini_options]
+minversion = "7.4"
+filterwarnings = [
+    "ignore::DeprecationWarning:mysql.*:",
+]
+norecursedirs = [
+    ".git",
+    "venv",
+    "dist",
+    ".eggs",
+    "wwdtm.egg-info",
+]
 
 [tool.ruff]
 target-version = "py310"
@@ -17,7 +30,7 @@ exclude = [
     ".venv",
 ]
 
-line-length = 88 # Must agree with Black
+line-length = 100 # Must agree with Black
 
 [tool.ruff.lint]
 ignore = [

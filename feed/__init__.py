@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 #
 # vim: set noai syntax=python ts=4 sw=4:
+# pylint: disable=R1732
 """Podcast Feed Module."""
 from typing import Any
 from urllib import request

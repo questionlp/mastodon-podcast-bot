@@ -42,6 +42,7 @@ def command_parse() -> Namespace:
         type=str,
         required=True,
     )
+
     return parser.parse_args()
 
 
@@ -61,15 +62,13 @@ def get_entries(db_file: str, podcast_name: str = None) -> list[dict[str, Any]] 
     cursor.close()
 
     if not records:
-        return None
+        return
 
     entries = []
     for record in records:
         entries.append(
             {
-                "podcast_name": podcast_name
-                if podcast_name
-                else record["podcast_name"],
+                "podcast_name": podcast_name if podcast_name else record["podcast_name"],
                 "guid": record["guid"],
                 "enclosure_url": record["enclosure_url"],
                 "processed_date": record["processed"],
@@ -82,13 +81,13 @@ def get_entries(db_file: str, podcast_name: str = None) -> list[dict[str, Any]] 
 def export_json(entries: list[dict[str, Any]], json_file: str) -> None:
     """Export entries to a JSON file."""
     if not entries:
-        return None
+        return
 
     json_file_path = Path(json_file)
     with json_file_path.open(mode="wt", encoding="utf-8") as output_file:
         json.dump(entries, output_file, sort_keys=False, indent=2)
 
-    return None
+    return
 
 
 def _main() -> None:
@@ -100,9 +99,10 @@ def _main() -> None:
     )
     if not _entries:
         print("No entries to export.")
-        return None
+        return
 
     export_json(entries=_entries, json_file=_command.json_file)
+    return
 
 
 if __name__ == "__main__":
