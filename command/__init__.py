@@ -13,7 +13,7 @@ class AppCommand:
     def parse(self) -> Namespace:
         """Parse command-line arguments, options and flags using ArgumentParser."""
         parser: ArgumentParser = ArgumentParser(
-            description="Fetch items from a podcast feed and publish new items to a Mastodon account."
+            description="Fetch items from a podcast feed and publish new items."
         )
         parser.add_argument(
             "-m",
@@ -36,9 +36,7 @@ class AppCommand:
             default="feeds.json",
             help="Podcast feeds settings file (default: feeds.json)",
         )
-        parser.add_argument(
-            "--debug", action="store_true", help="Enable debug output to stdout"
-        )
+        parser.add_argument("--debug", action="store_true", help="Enable debug output to stdout")
         parser.add_argument(
             "--skip-clean",
             action="store_true",
@@ -56,3 +54,6 @@ class AppCommand:
         )
 
         return parser.parse_args()
+
+    def __str__(self) -> str:
+        return self.__class__.__name__

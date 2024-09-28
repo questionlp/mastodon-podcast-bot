@@ -42,6 +42,7 @@ def command_parse() -> Namespace:
         type=str,
         required=True,
     )
+
     return parser.parse_args()
 
 
@@ -66,15 +67,12 @@ def create_database(db_file: str) -> None:
     )
     database.commit()
     database.close()
-    return None
 
 
-def import_entries(
-    entries: list[dict[str, Any]], db_file: str, podcast_name: str
-) -> None:
+def import_entries(entries: list[dict[str, Any]], db_file: str, podcast_name: str) -> None:
     """Import entries into a podcast feed database file."""
     if not entries:
-        return None
+        return
 
     data = []
     for entry in entries:
@@ -97,8 +95,7 @@ def import_entries(
     database: Connection = sqlite3.connect(db_file)
     database.executemany("INSERT INTO episodes VALUES(?, ?, ?, ?)", data)
     database.commit()
-
-    return None
+    return
 
 
 def _main() -> None:
@@ -107,11 +104,10 @@ def _main() -> None:
     _entries = get_entries(json_file=_command.json_file)
     if not _entries:
         print("No entries to import.")
-        return None
+        return
 
-    import_entries(
-        entries=_entries, db_file=_command.db_file, podcast_name=_command.podcast_name
-    )
+    import_entries(entries=_entries, db_file=_command.db_file, podcast_name=_command.podcast_name)
+    return
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "1.2.0.post1"
+APP_VERSION: str = "2.0.0"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -34,12 +34,10 @@ def retrieve_new_episodes(
 ) -> list[dict[str, Any]]:
     """Retrieve new episodes from a podcast feed."""
     seen_guids: list[str] = feed_database.retrieve_guids(feed_name=feed_name)
-    seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls(
-        feed_name=feed_name
-    )
+    seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls(feed_name=feed_name)
 
-    logger.debug(f"Seen GUIDs:\n{pformat(seen_guids, compact=True)}")
-    logger.debug(f"Seen Enclosure URLs:\n{pformat(seen_enclosure_urls, compact=True)}")
+    logger.debug("Seen GUIDs:\n%s", pformat(seen_guids, compact=True))
+    logger.debug("Seen Enclosure URLs:\n%s", pformat(seen_enclosure_urls, compact=True))
 
     episodes: list[dict[str, Any]] = []
 
@@ -48,7 +46,7 @@ def retrieve_new_episodes(
         enclosure_url: str = episode["enclosures"][0]["url"].strip()
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
-        if datetime.now() - publish_date <= timedelta(days=days):
+        if datetime.now() - publish_date > timedelta(days=days):
             # Only process episodes in which the GUID or the enclosure URL are
             # not in the episodes database table
             if guid not in seen_guids or enclosure_url not in seen_enclosure_urls:
@@ -71,7 +69,9 @@ def retrieve_new_episodes(
 
                     episodes.append(info)
                     logger.debug(
-                        f"Episode Info for GUID {guid}:\n{pformat(info, sort_dicts=False, compact=True)}"
+                        "Episode info for GUID %s:\n%s",
+                        guid,
+                        pformat(info, sort_dicts=False, compact=True),
                     )
 
                     if not dry_run:
@@ -134,9 +134,7 @@ def format_post(
     formatted_description = formatted_description.replace(r"\+", "+")
 
     if len(formatted_description) > max_description_length:
-        formatted_description = (
-            f"{formatted_description[:max_description_length].strip()}...\n"
-        )
+        formatted_description = f"{formatted_description[:max_description_length].strip()}...\n"
     else:
         formatted_description = f"{formatted_description.strip()}\n"
 
@@ -181,7 +179,7 @@ def main() -> None:
             logger.addHandler(log_handler)
 
         logger.debug("Starting")
-        logger.debug(f"Podcast Name: {feed.podcast_name}")
+        logger.debug("Podcast Name: %s", feed.podcast_name)
 
         # Check to see if the feed database file exists. Create file if
         # the file does not exist
@@ -194,10 +192,10 @@ def main() -> None:
             max_episodes=feed.max_episodes,
             user_agent=feed.user_agent,
         )
-        logger.debug(f"Feed URL: {feed.feed_url}")
+        logger.debug("Feed URL: %s", feed.feed_url)
 
         # Connect to Mastodon Client
-        logger.debug(f"Mastodon URL: {feed.mastodon_api_base_url}")
+        logger.debug("Mastodon URL: %s", feed.mastodon_api_base_url)
         if feed.mastodon_use_secrets_file:
             mastodon_client: MastodonClient = MastodonClient(
                 api_url=feed.mastodon_api_base_url,
@@ -222,7 +220,7 @@ def main() -> None:
             )
             new_episodes.reverse()
 
-            logger.debug(f"New Episodes:\n{pformat(new_episodes)}")
+            logger.debug("New Episodes:\n%s", pformat(new_episodes))
 
             for episode in new_episodes:
                 episode["title"] = unsmart_quotes(text=episode["title"])
@@ -234,7 +232,7 @@ def main() -> None:
                     template_file=feed.template_file,
                 )
                 if not dry_run:
-                    logger.info(f"Posting {episode}.")
+                    logger.info("Posting %s.", episode)
                     mastodon_client.post(content=post_text)
 
         if not dry_run or not arguments.skip_clean:

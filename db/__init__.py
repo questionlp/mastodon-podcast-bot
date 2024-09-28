@@ -36,7 +36,6 @@ class FeedDatabase:
         )
         database.commit()
         database.close()
-        return
 
     def _migrate(self) -> None:
         """Run any required database migration steps."""
@@ -58,8 +57,6 @@ class FeedDatabase:
             self.connection.execute("ALTER TABLE episodes ADD COLUMN podcast_name str")
             self.connection.commit()
 
-        return
-
     def connect(self, db_file: str) -> None:
         """Returns a connection to the feed database."""
         if Path(db_file).exists():
@@ -72,27 +69,35 @@ class FeedDatabase:
         feed_name: str = None,
         timestamp: datetime = _timestamp,
     ) -> None:
-        """Insert feed episode GUID into the feed database with a timestamp (default: current date/time)."""
+        """Insert feed episode GUID into the feed database with a timestamp.
+
+        Default: current date/time.
+        """
         if enclosure_url:
             self.connection.execute(
-                "INSERT INTO episodes (guid, enclosure_url, podcast_name, processed) VALUES (?, ?, ?, ?)",
+                (
+                    "INSERT INTO episodes (guid, enclosure_url, podcast_name, "
+                    "processed) VALUES (?, ?, ?, ?)"
+                ),
                 (guid, enclosure_url, feed_name, timestamp),
             )
             self.connection.commit()
         else:
             self.connection.execute(
-                "INSERT INTO episodes (guid, podcast_name, processed) VALUES (?, ?, ?)",
+                ("INSERT INTO episodes (guid, podcast_name, processed) VALUES (?, ?, ?)"),
                 (guid, feed_name, timestamp),
             )
             self.connection.commit()
-        return
 
     def retrieve(self, episode_guid: str, feed_name: str = None) -> dict[str, Any]:
         """Retrieve stored information for a specific episode GUID."""
         episode: dict[str, Any] = {}
         if feed_name:
             result: Cursor = self.connection.execute(
-                "SELECT guid, processed FROM episodes WHERE guid = ? AND podcast_name = ? LIMIT 1",
+                (
+                    "SELECT guid, processed FROM episodes WHERE guid = ? "
+                    "AND podcast_name = ? LIMIT 1"
+                ),
                 (episode_guid, feed_name),
             )
             episode["guid"], episode["processed"] = result.fetchone()
@@ -102,6 +107,7 @@ class FeedDatabase:
                 (episode_guid,),
             )
             episode["guid"], episode["processed"] = result.fetchone()
+
         return episode
 
     def retrieve_enclosure_urls(self, feed_name: str = None) -> list[str]:
@@ -109,7 +115,10 @@ class FeedDatabase:
         urls: list[str] = []
         if feed_name:
             for url in self.connection.execute(
-                "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url IS NOT NULL AND podcast_name = ?",
+                (
+                    "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url "
+                    "IS NOT NULL AND podcast_name = ?"
+                ),
                 (feed_name,),
             ):
                 urls.append(url[0])
@@ -126,7 +135,10 @@ class FeedDatabase:
         guids: list[str] = []
         if feed_name:
             for guid in self.connection.execute(
-                "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL AND podcast_name = ?",
+                (
+                    "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL "
+                    "AND podcast_name = ?"
+                ),
                 (feed_name,),
             ):
                 guids.append(guid[0])
@@ -141,8 +153,5 @@ class FeedDatabase:
     def clean(self, days_to_keep: int = 90) -> None:
         """Remove old episode entries from the database."""
         datetime_filter: datetime = datetime.now() - timedelta(days=days_to_keep)
-        self.connection.execute(
-            "DELETE FROM episodes WHERE processed <= ?", (datetime_filter,)
-        )
+        self.connection.execute("DELETE FROM episodes WHERE processed <= ?", (datetime_filter,))
         self.connection.commit()
-        return

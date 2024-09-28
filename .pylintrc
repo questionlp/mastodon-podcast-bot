@@ -1,0 +1,5 @@
+[design]
+max-args = 10
+max-branches = 15
+max-locals = 20
+max-nested-blocks = 8
