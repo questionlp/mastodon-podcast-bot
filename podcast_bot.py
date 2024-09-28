@@ -34,9 +34,7 @@ def retrieve_new_episodes(
 ) -> list[dict[str, Any]]:
     """Retrieve new episodes from a podcast feed."""
     seen_guids: list[str] = feed_database.retrieve_guids(feed_name=feed_name)
-    seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls(
-        feed_name=feed_name
-    )
+    seen_enclosure_urls: list[str] = feed_database.retrieve_enclosure_urls(feed_name=feed_name)
 
     logger.debug("Seen GUIDs:\n%s", pformat(seen_guids, compact=True))
     logger.debug("Seen Enclosure URLs:\n%s", pformat(seen_enclosure_urls, compact=True))
@@ -136,9 +134,7 @@ def format_post(
     formatted_description = formatted_description.replace(r"\+", "+")
 
     if len(formatted_description) > max_description_length:
-        formatted_description = (
-            f"{formatted_description[:max_description_length].strip()}...\n"
-        )
+        formatted_description = f"{formatted_description[:max_description_length].strip()}...\n"
     else:
         formatted_description = f"{formatted_description.strip()}\n"
 
