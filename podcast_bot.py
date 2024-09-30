@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "2.0.0"
+APP_VERSION: str = "2.0.1"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -46,7 +46,7 @@ def retrieve_new_episodes(
         enclosure_url: str = episode["enclosures"][0]["url"].strip()
         publish_date: datetime = datetime.fromtimestamp(episode["published"])
 
-        if datetime.now() - publish_date > timedelta(days=days):
+        if datetime.now() - publish_date <= timedelta(days=days):
             # Only process episodes in which the GUID or the enclosure URL are
             # not in the episodes database table
             if guid not in seen_guids or enclosure_url not in seen_enclosure_urls:
