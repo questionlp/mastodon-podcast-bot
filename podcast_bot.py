@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "2.0.1"
+APP_VERSION: str = "2.0.2"
 logger: logging.Logger = logging.getLogger(__name__)
 
 

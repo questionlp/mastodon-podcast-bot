@@ -94,10 +94,7 @@ class FeedDatabase:
         episode: dict[str, Any] = {}
         if feed_name:
             result: Cursor = self.connection.execute(
-                (
-                    "SELECT guid, processed FROM episodes WHERE guid = ? "
-                    "AND podcast_name = ? LIMIT 1"
-                ),
+                "SELECT guid, processed FROM episodes WHERE guid = ? AND podcast_name = ? LIMIT 1",
                 (episode_guid, feed_name),
             )
             episode["guid"], episode["processed"] = result.fetchone()
@@ -115,10 +112,8 @@ class FeedDatabase:
         urls: list[str] = []
         if feed_name:
             for url in self.connection.execute(
-                (
-                    "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url "
-                    "IS NOT NULL AND podcast_name = ?"
-                ),
+                "SELECT DISTINCT enclosure_url FROM episodes WHERE enclosure_url "
+                "IS NOT NULL AND podcast_name = ?",
                 (feed_name,),
             ):
                 urls.append(url[0])
@@ -135,10 +130,7 @@ class FeedDatabase:
         guids: list[str] = []
         if feed_name:
             for guid in self.connection.execute(
-                (
-                    "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL "
-                    "AND podcast_name = ?"
-                ),
+                "SELECT DISTINCT guid FROM episodes WHERE guid IS NOT NULL AND podcast_name = ?",
                 (feed_name,),
             ):
                 guids.append(guid[0])

@@ -168,10 +168,7 @@ class AppEnvironment:
             max_episodes=int(dotenv_config.get("MAX_EPISODES", 50)),
             max_description_length=int(dotenv_config.get("MAX_DESCRIPTION_LENGTH", 275)),
             guid_filter=dotenv_config.get("PODCAST_GUID_FILTER", "").strip(),
-            user_agent=dotenv_config.get(
-                "USER_AGENT",
-                "Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
-            ).strip(),
+            user_agent=dotenv_config.get("USER_AGENT", _DEFAULT_USER_AGENT).strip(),
             template_directory=dotenv_config.get("POST_TEMPLATE_DIR", "templates").strip(),
             template_file=dotenv_config.get("POST_TEMPLATE", "post.txt.jinja").strip(),
         )

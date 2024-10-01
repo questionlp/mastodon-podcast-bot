@@ -18,7 +18,7 @@ class PodcastFeed:
         self,
         feed_url: str,
         max_episodes: int = 50,
-        user_agent="Mozilla/5.0 (Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+        user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
     ) -> list[dict[str, Any]]:
         """Fetch items from the requested podcast feed."""
         feed_request = request.Request(url=feed_url, headers={"User-Agent": user_agent})
