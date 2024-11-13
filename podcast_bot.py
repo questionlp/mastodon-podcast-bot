@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "2.1.0"
+APP_VERSION: str = "2.1.1"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -165,23 +165,26 @@ def main() -> None:
     dry_run: bool = arguments.dry_run
 
     for feed in feeds:
+        if feed.log_file:
+            log_handler: logging.FileHandler = logging.FileHandler(feed.log_file)
+            log_format: logging.Formatter = logging.Formatter(
+                fmt="%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+            )
+            log_handler.setFormatter(log_format)
+            if arguments.debug:
+                logger.setLevel(logging.DEBUG)
+            else:
+                logger.setLevel(logging.INFO)
+
+            logger.addHandler(log_handler)
+
+        logger.debug("Starting")
+        if dry_run:
+            logger.debug("Dry Run: true")
+
+        logger.debug("Podcast Name: %s", feed.podcast_name)
+
         if feed.enabled:
-            if feed.log_file:
-                log_handler: logging.FileHandler = logging.FileHandler(feed.log_file)
-                log_format: logging.Formatter = logging.Formatter(
-                    fmt="%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-                )
-                log_handler.setFormatter(log_format)
-                if arguments.debug:
-                    logger.setLevel(logging.DEBUG)
-                else:
-                    logger.setLevel(logging.INFO)
-
-                logger.addHandler(log_handler)
-
-            logger.debug("Starting")
-            logger.debug("Podcast Name: %s", feed.podcast_name)
-
             # Check to see if the feed database file exists. Create file if
             # the file does not exist
             feed_database: FeedDatabase = FeedDatabase(feed.database_file)
@@ -240,8 +243,11 @@ def main() -> None:
                 feed_database.clean(days_to_keep=feed.database_clean_days)
 
             logger.debug("Finished")
-            log_handler.close()
-            logger.removeHandler(log_handler)
+        else:
+            logger.debug("Feed disabled. Skipping.")
+
+        log_handler.close()
+        logger.removeHandler(log_handler)
 
 
 if __name__ == "__main__":
