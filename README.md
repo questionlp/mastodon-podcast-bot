@@ -48,6 +48,7 @@ Once the dependencies have been installed, make a copy of the `.env.dist` file a
 |---------|-------------|
 | PODCAST_NAME | Name of the podcast to be included in the post. |
 | PODCAST_FEED_URL | URL for the podcast feed to retrieve and parse episodes. |
+| ENABLED | Flag to set whether or enable or disable processing of the podcast feed (Default: false) |
 | MASTODON_USE_SECRETS_FILE | Set whether or not a Mastodon secrets file will be used for authenticiation. (Default: True ) |
 | MASTODON_SECRETS_FILE (or MASTODON_SECRET) | OAuth secret file that will be used to authenticate your Mastodon user account against your Mastodon server. Note that the `MASTODON_SECRETS_FILE` setting is replacing the `MASTODON_SECRET` setting. The value from `MASTODON_SECRET` is still being read, but the setting will be deprecated in the near future. |
 | MASTODON_CLIENT_SECRET | Mastodon API client secret used for authentication. |
@@ -71,6 +72,7 @@ The `feeds.json` file needs to be a valid JSON file that contains an array of ob
 | Attribute | Description |
 |---------|-------------|
 | name | Name of the podcast to be included in the post. |
+| enabled | Flag to set whether or enable or disable processing of the podcast feed (Default: false) |
 | database_file | Location of the SQLite3 file that will be used to store episodes that the script has already been processed. |
 | database_clean_days | Number of days to keep records in the SQLite3. Used by the clean-up function to remove older entries. This value should be greater than the value set for `recent_days`. (Default: 90) |
 | recent_days | Number of days in a podcast RSS feed to process. Any episodes older than that will be skipped. (Default: 5) |

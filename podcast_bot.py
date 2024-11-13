@@ -20,7 +20,7 @@ from db import FeedDatabase
 from feed import PodcastFeed
 from mastodon_client import MastodonClient
 
-APP_VERSION: str = "2.0.2"
+APP_VERSION: str = "2.1.0"
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -165,82 +165,83 @@ def main() -> None:
     dry_run: bool = arguments.dry_run
 
     for feed in feeds:
-        if feed.log_file:
-            log_handler: logging.FileHandler = logging.FileHandler(feed.log_file)
-            log_format: logging.Formatter = logging.Formatter(
-                fmt="%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-            )
-            log_handler.setFormatter(log_format)
-            if arguments.debug:
-                logger.setLevel(logging.DEBUG)
-            else:
-                logger.setLevel(logging.INFO)
-
-            logger.addHandler(log_handler)
-
-        logger.debug("Starting")
-        logger.debug("Podcast Name: %s", feed.podcast_name)
-
-        # Check to see if the feed database file exists. Create file if
-        # the file does not exist
-        feed_database: FeedDatabase = FeedDatabase(feed.database_file)
-
-        # Pull episodes from the configured podcast feed
-        podcast: PodcastFeed = PodcastFeed()
-        episodes: list[dict[str, Any]] = podcast.fetch(
-            feed_url=feed.feed_url,
-            max_episodes=feed.max_episodes,
-            user_agent=feed.user_agent,
-        )
-        logger.debug("Feed URL: %s", feed.feed_url)
-
-        # Connect to Mastodon Client
-        logger.debug("Mastodon URL: %s", feed.mastodon_api_base_url)
-        if feed.mastodon_use_secrets_file:
-            mastodon_client: MastodonClient = MastodonClient(
-                api_url=feed.mastodon_api_base_url,
-                client_secret=None,
-                access_token=feed.mastodon_secrets_file,
-            )
-        else:
-            mastodon_client: MastodonClient = MastodonClient(
-                api_url=feed.mastodon_api_base_url,
-                client_secret=feed.mastodon_client_secret,
-                access_token=feed.mastodon_access_token,
-            )
-
-        if episodes:
-            new_episodes: list[dict[str, Any]] = retrieve_new_episodes(
-                feed_episodes=episodes,
-                feed_database=feed_database,
-                feed_name=feed.name,
-                guid_filter=feed.guid_filter,
-                days=feed.recent_days,
-                dry_run=dry_run,
-            )
-            new_episodes.reverse()
-
-            logger.debug("New Episodes:\n%s", pformat(new_episodes))
-
-            for episode in new_episodes:
-                episode["title"] = unsmart_quotes(text=episode["title"])
-                post_text: str = format_post(
-                    podcast_name=feed.podcast_name,
-                    episode=episode,
-                    max_description_length=feed.max_description_length,
-                    template_path=feed.template_directory,
-                    template_file=feed.template_file,
+        if feed.enabled:
+            if feed.log_file:
+                log_handler: logging.FileHandler = logging.FileHandler(feed.log_file)
+                log_format: logging.Formatter = logging.Formatter(
+                    fmt="%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
                 )
-                if not dry_run:
-                    logger.info("Posting %s.", episode)
-                    mastodon_client.post(content=post_text)
+                log_handler.setFormatter(log_format)
+                if arguments.debug:
+                    logger.setLevel(logging.DEBUG)
+                else:
+                    logger.setLevel(logging.INFO)
 
-        if not dry_run or not arguments.skip_clean:
-            feed_database.clean(days_to_keep=feed.database_clean_days)
+                logger.addHandler(log_handler)
 
-        logger.debug("Finished")
-        log_handler.close()
-        logger.removeHandler(log_handler)
+            logger.debug("Starting")
+            logger.debug("Podcast Name: %s", feed.podcast_name)
+
+            # Check to see if the feed database file exists. Create file if
+            # the file does not exist
+            feed_database: FeedDatabase = FeedDatabase(feed.database_file)
+
+            # Pull episodes from the configured podcast feed
+            podcast: PodcastFeed = PodcastFeed()
+            episodes: list[dict[str, Any]] = podcast.fetch(
+                feed_url=feed.feed_url,
+                max_episodes=feed.max_episodes,
+                user_agent=feed.user_agent,
+            )
+            logger.debug("Feed URL: %s", feed.feed_url)
+
+            # Connect to Mastodon Client
+            logger.debug("Mastodon URL: %s", feed.mastodon_api_base_url)
+            if feed.mastodon_use_secrets_file:
+                mastodon_client: MastodonClient = MastodonClient(
+                    api_url=feed.mastodon_api_base_url,
+                    client_secret=None,
+                    access_token=feed.mastodon_secrets_file,
+                )
+            else:
+                mastodon_client: MastodonClient = MastodonClient(
+                    api_url=feed.mastodon_api_base_url,
+                    client_secret=feed.mastodon_client_secret,
+                    access_token=feed.mastodon_access_token,
+                )
+
+            if episodes:
+                new_episodes: list[dict[str, Any]] = retrieve_new_episodes(
+                    feed_episodes=episodes,
+                    feed_database=feed_database,
+                    feed_name=feed.name,
+                    guid_filter=feed.guid_filter,
+                    days=feed.recent_days,
+                    dry_run=dry_run,
+                )
+                new_episodes.reverse()
+
+                logger.debug("New Episodes:\n%s", pformat(new_episodes))
+
+                for episode in new_episodes:
+                    episode["title"] = unsmart_quotes(text=episode["title"])
+                    post_text: str = format_post(
+                        podcast_name=feed.podcast_name,
+                        episode=episode,
+                        max_description_length=feed.max_description_length,
+                        template_path=feed.template_directory,
+                        template_file=feed.template_file,
+                    )
+                    if not dry_run:
+                        logger.info("Posting %s.", episode)
+                        mastodon_client.post(content=post_text)
+
+            if not dry_run or not arguments.skip_clean:
+                feed_database.clean(days_to_keep=feed.database_clean_days)
+
+            logger.debug("Finished")
+            log_handler.close()
+            logger.removeHandler(log_handler)
 
 
 if __name__ == "__main__":

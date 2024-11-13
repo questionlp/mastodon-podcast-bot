@@ -1,6 +1,7 @@
 [
     {
         "name": "",
+        "enabled": true,
         "database_file": "feed_info.sqlite3",
         "database_clean_days": 90,
         "recent_days": 5,
