@@ -74,6 +74,7 @@ class AppConfig:
             else:
                 use_secrets_file = True
 
+            secrets_file = None
             if use_secrets_file and "mastodon_secret" in feed:
                 secrets_file = feed["mastodon_secret"].strip()
             elif use_secrets_file and "mastodon_secrets_file" in feed:
